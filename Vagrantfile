@@ -46,6 +46,11 @@ Vagrant.configure("2") do |config|
     config.vm.network :private_network, ip: ip
     config.ssh.forward_agent = true
 
+    config.vm.provision "fix-no-tty", type: "shell" do |s|
+      s.privileged = false
+      s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
+    end
+
     # If ansible is in your path it will provision from your HOST machine
     # If ansible is not found in the path it will be instaled in the VM and provisioned from there
     if which('ansible-playbook')
@@ -58,6 +63,7 @@ Vagrant.configure("2") do |config|
         config.vm.provision :shell, path: "ansible/windows.sh", args: [hostname]
     end
 
+    config.vm.provision :shell, :path => "ansible/increase_swap.sh"
     config.vm.provision :hostmanager
     config.vm.synced_folder "./", "/vagrant", type: "nfs"
 end

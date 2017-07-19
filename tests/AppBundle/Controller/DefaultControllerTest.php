@@ -10,9 +10,18 @@ class DefaultControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/');
+        $client->request('GET', '/');
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Welcome to Symfony', $crawler->filter('#container h1')->text());
+        $response = $client->getResponse();
+        // Test if response is OK
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
+        // Test that a string is a valid JSON string
+        $this->assertJson($response->getContent());
+        // Test if Content-Type is valid application/json
+        $this->assertSame('application/json', $response->headers->get('Content-Type'));
+        // Test if company was inserted
+        $this->assertEquals('{"hello":"world"}', $response->getContent());
+        // Test that response is not empty
+        $this->assertNotEmpty($client->getResponse()->getContent());
     }
 }

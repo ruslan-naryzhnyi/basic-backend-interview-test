@@ -1,0 +1,27 @@
+---
+server:
+    install: '1'
+    packages: [git, nodejs, npm, htop, mc]
+    timezone: UTC
+    locale: ru_RU.UTF-8
+vagrant_local:
+    install: '1'
+    vm: { base_box: trusty64, hostname: default, ip: 192.168.33.92, memory: '1024', sharedfolder: ./, useVagrantCloud: '1', syncType: nfs }
+nginx:
+    install: '1'
+    docroot: /vagrant/web
+    servername: local.test.com
+mysql:
+    install: '1'
+    root_password: ''
+    database: main_db
+    user: user
+    password: password
+    dump: ''
+php:
+    install: '1'
+    ppa: php
+    packages: [php7.0, php7.0-mcrypt, php7.0-fpm, php7.0-mbstring, php7.0-curl, php7.0-cli, php7.0-mysql, php-mysql, php7.0-gd, php7.0-intl, php7.0-xsl, php7.0-zip, php7.0-sqlite3, php7.0-xdebug, php7.0-dev]
+composer:
+    install: '1'
+

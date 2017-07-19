@@ -52,7 +52,12 @@ class AppGetDataFromNasaApiCommand extends ContainerAwareCommand
 
         $response = $client->request('GET', $apiUrl, ['query' => $data]);
 
-        $result = $this->saveToDatabase($response->getBody()->getContents());
+        $jsonDecode = new JsonDecode();
+        $content = $jsonDecode->decode($response->getBody()->getContents(), JsonEncoder::FORMAT, [
+            'json_decode_associative' => true,
+        ]);
+
+        $result = $this->saveToDatabase($content);
 
         if ($result) {
             $output->writeln('success');
@@ -62,27 +67,24 @@ class AppGetDataFromNasaApiCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param $contents
+     * @param $content
      * @return bool
      */
-    private function saveToDatabase($contents)
+    private function saveToDatabase($content)
     {
         $container = $this->getContainer();
         /** @var EntityManager $em */
         $em = $container->get('doctrine')->getManager();
 
-        $jsonDecode = new JsonDecode();
-        $content = $jsonDecode->decode($contents, JsonEncoder::FORMAT);
-
-        if (!empty($content->near_earth_objects)) {
-            foreach ($content->near_earth_objects as $keyDate => $date) {
+        if (!empty($content['near_earth_objects'])) {
+            foreach ($content['near_earth_objects'] as $keyDate => $date) {
                 foreach ($date as $key => $item) {
                     $asteroid = new Asteroid();
                     $asteroid->setDate(new \DateTime($keyDate));
-                    $asteroid->setReference($item->neo_reference_id);
-                    $asteroid->setName($item->name);
-                    $asteroid->setSpeed($item->close_approach_data[0]->relative_velocity->kilometers_per_hour);
-                    $asteroid->setIsHazardous($item->is_potentially_hazardous_asteroid);
+                    $asteroid->setReference($item['neo_reference_id']);
+                    $asteroid->setName($item['name']);
+                    $asteroid->setSpeed($item['close_approach_data'][0]['relative_velocity']['kilometers_per_hour']);
+                    $asteroid->setIsHazardous($item['is_potentially_hazardous_asteroid']);
 
                     $em->persist($asteroid);
                     $em->flush($asteroid);

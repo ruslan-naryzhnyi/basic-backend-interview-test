@@ -86,6 +86,9 @@ class AppGetDataFromNasaApiCommand extends ContainerAwareCommand
                     $asteroid->setSpeed($item['close_approach_data'][0]['relative_velocity']['kilometers_per_hour']);
                     $asteroid->setIsHazardous($item['is_potentially_hazardous_asteroid']);
 
+                    // If this script was called every day,
+                    // it might be worth making a validation for the existence of this record in the database
+                    // The database already has indexes that verify the uniqueness of the record
                     $em->persist($asteroid);
                     $em->flush($asteroid);
                 }

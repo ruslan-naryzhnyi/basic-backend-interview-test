@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Asteroid
  *
- * @ORM\Table(name="asteroid")
+ * @ORM\Table(name="asteroid", uniqueConstraints={@ORM\UniqueConstraint(name="reference_name_unique", columns={"reference", "name"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AsteroidRepository")
  */
 class Asteroid

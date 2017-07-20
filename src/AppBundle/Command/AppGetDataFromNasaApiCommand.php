@@ -6,9 +6,7 @@ use AppBundle\Entity\Asteroid;
 use Doctrine\ORM\EntityManager;
 use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -18,20 +16,12 @@ class AppGetDataFromNasaApiCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('app:get-data-from-nasa-api')
-            ->setDescription('...')
-            ->addArgument('argument', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option', null, InputOption::VALUE_NONE, 'Option description');
+            ->setName('app:get-data-from-nasa-api');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container = $this->getContainer();
-        $argument = $input->getArgument('argument');
-
-        if ($input->getOption('option')) {
-            // ...
-        }
 
         $apiUrl = $container->getParameter('api.nasa.gov.rest.url');
         $apiKey = $container->getParameter('api.nasa.gov.key');
@@ -46,8 +36,8 @@ class AppGetDataFromNasaApiCommand extends ContainerAwareCommand
 
         $data = array(
             'start_date' => $dateFrom,
-            'end_date' => $dateTo,
-            'api_key' => $apiKey,
+            'end_date'   => $dateTo,
+            'api_key'    => $apiKey,
         );
 
         $response = $client->request('GET', $apiUrl, ['query' => $data]);
@@ -68,6 +58,7 @@ class AppGetDataFromNasaApiCommand extends ContainerAwareCommand
 
     /**
      * @param $content
+     *
      * @return bool
      */
     private function saveToDatabase($content)
